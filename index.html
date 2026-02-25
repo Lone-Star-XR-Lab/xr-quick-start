@@ -313,12 +313,17 @@
           <div class="panel">
             <ul class="list">
               <li>Double-tap the side of the headset</li>
-              <li>This switches between MR and VR view</li>
-              <li>Double-tap again to switch back</li>
+              <li>This toggles between VR and passthrough (MR)</li>
+              <li>Double-tap again to return to your previous view</li>
+              <li>Use this as a quick safety check if you feel nauseous or need to see your surroundings</li>
             </ul>
           </div>
         </div>
-        <div class="img" data-placeholder="Add photo: double-tap location"><img class="slide-photo" alt="" loading="lazy" /></div>
+        <div class="img has-image" data-placeholder="Add photo: double-tap location">
+          <video class="slide-photo" autoplay loop muted playsinline preload="auto" aria-label="Double-tap to switch MR and VR">
+            <source src="video/double tap.webm" type="video/webm" />
+          </video>
+        </div>
       </div>
     </section>
 

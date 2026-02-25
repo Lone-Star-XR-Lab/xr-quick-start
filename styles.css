@@ -180,6 +180,25 @@ h2{margin:0 0 10px;letter-spacing:-.02em;font-size:clamp(30px,4vw,40px)}
 .slide[data-title="Headset buttons"] .inner > div:first-child .panel{
   width:min(860px, 100%);
 }
+.slide[data-title="Library"] .inner > div:first-child,
+.slide[data-title="MR/VR"] .inner > div:first-child{
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  text-align:center;
+  padding-top:0;
+}
+.slide[data-title="Library"] .inner > div:first-child .panel,
+.slide[data-title="MR/VR"] .inner > div:first-child .panel{
+  width:min(860px, 100%);
+}
+.slide[data-title="Library"] .list,
+.slide[data-title="MR/VR"] .list{
+  padding-left:0;
+  list-style-position:inside;
+  text-align:center;
+}
 .list{margin:0;padding-left:18px;font-size:clamp(20px,2.4vw,30px);line-height:1.35}
 .list li{margin:4px 0}
 .img{

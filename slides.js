@@ -3,6 +3,38 @@ const IMAGE_BY_SLIDE = {
   4: "Quest-3-Elite-Strap-with-Battery.webp"
 };
 
+const IMAGE_SEQUENCE_BY_SLIDE = {
+  7: [
+    {
+      file: "Menu Bar.jpg",
+      alt: "Quest menu bar",
+      bullets: [
+        "Press the Meta button",
+        "Confirm the menu bar is visible",
+        "Get ready to select Library"
+      ]
+    },
+    {
+      file: "Library 02.jpg",
+      alt: "Controller selecting Library icon",
+      bullets: [
+        "Point at the Library icon",
+        "Select the Library icon",
+        "Wait for Library to open"
+      ]
+    },
+    {
+      file: "Library 03.jpg",
+      alt: "Quest Library open",
+      bullets: [
+        "Library is now open",
+        "Find the app you need",
+        "Select the app to launch"
+      ]
+    }
+  ]
+};
+
 const slides = Array.from(document.querySelectorAll(".slide"));
 const progress = document.getElementById("progress");
 const count = document.getElementById("count");
@@ -17,6 +49,7 @@ let timer = null;
 const AUTO_MS = 8000;
 
 const hotspotIndexBySlide = new Map();
+const imageSequenceIndexBySlide = new Map();
 let debugMode = false;
 let debugPanel = null;
 
@@ -236,6 +269,51 @@ function applySlideImages() {
   });
 }
 
+function applyImageSequenceStep(slide, slideIndex, stepIndex) {
+  const sequence = IMAGE_SEQUENCE_BY_SLIDE[slideIndex];
+  if (!sequence?.length) return;
+
+  const normalized = ((stepIndex % sequence.length) + sequence.length) % sequence.length;
+  const step = sequence[normalized];
+
+  const box = slide.querySelector(".img");
+  const img = box?.querySelector(".slide-photo");
+  const list = slide.querySelector(".panel .list");
+  if (!box || !img || !list) return;
+
+  imageSequenceIndexBySlide.set(slideIndex, normalized);
+  box.classList.add("has-image");
+  img.src = `img/${step.file}`;
+  img.alt = step.alt;
+
+  list.innerHTML = "";
+  step.bullets.forEach((text) => {
+    const li = document.createElement("li");
+    li.textContent = text;
+    list.appendChild(li);
+  });
+}
+
+function initImageSequenceSlides() {
+  Object.keys(IMAGE_SEQUENCE_BY_SLIDE).forEach((key) => {
+    const slideIndex = Number(key);
+    const slide = slides[slideIndex];
+    if (!slide) return;
+
+    const box = slide.querySelector(".img");
+    if (!box) return;
+
+    applyImageSequenceStep(slide, slideIndex, imageSequenceIndexBySlide.get(slideIndex) ?? 0);
+
+    box.addEventListener("click", (e) => {
+      if (!slide.classList.contains("active")) return;
+      e.stopPropagation();
+      const current = imageSequenceIndexBySlide.get(slideIndex) ?? 0;
+      applyImageSequenceStep(slide, slideIndex, current + 1);
+    });
+  });
+}
+
 function buildDots() {
   dots.innerHTML = "";
   slides.forEach((_, idx) => {
@@ -312,6 +390,7 @@ document.addEventListener("keydown", (e) => {
 auto.addEventListener("change", () => setAuto(auto.checked));
 
 applySlideImages();
+initImageSequenceSlides();
 initHotspotClickHandlers();
 initHotspotTracking();
 ensureDebugPanel();
