@@ -1,11 +1,6 @@
 const IMAGE_BY_SLIDE = {
-  0: "start.jpg",
-  1: "hold.jpg",
-  4: "headset-fit.jpg",
-  5: "battery-strap.jpg",
-  7: "glasses.jpg",
-  8: "adjust-clarity.jpg",
-  9: "store.jpg"
+  0: "Quest-3-With-Controllers.webp",
+  4: "Quest-3-Elite-Strap-with-Battery.webp"
 };
 
 const slides = Array.from(document.querySelectorAll(".slide"));
@@ -124,9 +119,19 @@ function updateHotspotConnector(slide) {
   const x1 = dr.left + (dr.width / 2) - vr.left;
   const y1 = dr.top + (dr.height / 2) - vr.top;
 
-  const labelCenterX = lr.left + (lr.width / 2) - vr.left;
-  const x2 = labelCenterX > x1 ? (lr.left - vr.left) : (lr.right - vr.left);
-  const y2 = lr.top + (lr.height / 2) - vr.top;
+  const fixedGroup = label.closest(".hotspot-fixed");
+  const isBottomLayout = fixedGroup?.classList.contains("hotspot-fixed-bottom");
+
+  let x2;
+  let y2;
+  if (isBottomLayout) {
+    x2 = lr.left + (lr.width / 2) - vr.left;
+    y2 = lr.top - vr.top;
+  } else {
+    const labelCenterX = lr.left + (lr.width / 2) - vr.left;
+    x2 = labelCenterX > x1 ? (lr.left - vr.left) : (lr.right - vr.left);
+    y2 = lr.top + (lr.height / 2) - vr.top;
+  }
 
   const dx = x2 - x1;
   const dy = y2 - y1;
@@ -152,6 +157,8 @@ function setHotspot(slide, index) {
   const activeKey = activeHotspot.dataset.key;
   const fixedLabels = Array.from(slide.querySelectorAll(".hotspot-item"));
   fixedLabels.forEach((label) => label.classList.toggle("is-active", label.dataset.key === activeKey));
+  const descriptions = Array.from(slide.querySelectorAll(".hotspot-desc"));
+  descriptions.forEach((desc) => desc.classList.toggle("is-active", desc.dataset.key === activeKey));
   activeHotspot.focus({ preventScroll: true });
   requestAnimationFrame(() => updateHotspotConnector(slide));
 }
@@ -221,9 +228,11 @@ function applySlideImages() {
     const img = box.querySelector(".slide-photo");
     if (!file || !img) return;
 
-    img.src = `img/${file}`;
+    box.classList.add("has-image");
     img.onload = () => box.classList.add("has-image");
     img.onerror = () => box.classList.remove("has-image");
+    img.src = `img/${file}`;
+    if (img.complete && img.naturalWidth > 0) box.classList.add("has-image");
   });
 }
 

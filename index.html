@@ -36,15 +36,15 @@
   <div class="progress-wrap"><div class="progress" id="progress"></div></div>
 
   <main>
-    <section class="slide active" data-title="Start">
+    <section class="slide active" data-title="Welcome">
       <div class="inner">
         <div>
-          <h2>Start</h2>
+          <h2>Welcome to the XR Lab</h2>
           <div class="panel">
             <ul class="list">
-              <li>Put on wrist straps</li>
-              <li>Pick up controllers</li>
-              <li>Put on headset</li>
+              <li>This is a quick Quest 3 basics guide</li>
+              <li>We will cover controls, fit, and safety</li>
+              <li>Follow each step before starting apps</li>
             </ul>
           </div>
         </div>
@@ -52,68 +52,53 @@
       </div>
     </section>
 
-    <section class="slide" data-title="Hold">
-      <div class="inner">
-        <div>
-          <h2>Hold</h2>
-          <div class="panel">
-            <ul class="list">
-              <li>Hand through strap</li>
-              <li>Relaxed grip</li>
-              <li>Keep ring clear</li>
-            </ul>
-          </div>
-        </div>
-        <div class="img" data-placeholder="Add photo: correct hold"><img class="slide-photo" alt="" loading="lazy" /></div>
-      </div>
-    </section>
-
-    <section class="slide" data-title="Left controller">
-      <div class="inner">
-        <div>
-          <h2>Left controller buttons</h2>
-          <div class="panel">
-            <ul class="list">
-              <li>Trigger = select</li>
-              <li>Grip = hold</li>
-              <li>Stick = move or turn</li>
-              <li>X / Y buttons</li>
-              <li>Menu button</li>
-            </ul>
-          </div>
-        </div>
-        <div class="viewer3d">
-          <model-viewer class="viewer-canvas" src="assets/quest3-controller-l.glb" camera-controls interaction-prompt="none" environment-image="neutral" exposure="2" shadow-intensity="0.1" shadow-softness="1.0" orientation="180deg 0deg 0deg" camera-orbit="-8deg 160deg 84%" min-camera-orbit="auto auto 84%" max-camera-orbit="auto auto 84%" camera-target="0.03m 0.06m 0m">
-            <button class="hotspot" slot="hotspot-l-trigger" data-key="trigger" aria-label="Trigger" data-position="0.013 0.035 0.027" data-normal="0.131 0.637 0.759"></button>
-            <button class="hotspot" slot="hotspot-l-grip" data-key="grip" aria-label="Grip" data-position="0.015 -0.010 -0.015" data-normal="0.969 -0.222 0.104"></button>
-            <button class="hotspot" slot="hotspot-l-stick" data-key="stick" aria-label="Stick" data-position="-0.007 -0.007 0.039" data-normal="-0.006 -0.814 0.581"></button>
-            <button class="hotspot" slot="hotspot-l-face" data-key="face" aria-label="X/Y" data-position="0.011 -0.008 0.027" data-normal="0.080 -0.839 0.537"></button>
-            <button class="hotspot" slot="hotspot-l-menu" data-key="menu" aria-label="Menu" data-position="-0.010 -0.014 0.019" data-normal="0.003 -0.795 0.607"></button>
-          </model-viewer>
-          <div class="hotspot-connector" aria-hidden="true"></div>
-          <div class="hotspot-fixed hotspot-fixed-right">
-            <div class="hotspot-item" data-key="trigger">Trigger</div>
-            <div class="hotspot-item" data-key="grip">Grip</div>
-            <div class="hotspot-item" data-key="stick">JoyStick</div>
-            <div class="hotspot-item" data-key="face">X/Y</div>
-            <div class="hotspot-item" data-key="menu">Menu</div>
-          </div>
-        </div>
-      </div>
-    </section>
-
     <section class="slide" data-title="Right controller">
       <div class="inner">
         <div>
           <h2>Right controller buttons</h2>
-          <div class="panel">
-            <ul class="list">
-              <li>Trigger = select</li>
-              <li>Grip = hold</li>
-              <li>Stick = move or turn</li>
-              <li>A / B buttons</li>
-              <li>Meta button</li>
-            </ul>
+          <div class="panel controller-panel">
+            <div class="hotspot-desc is-active" data-key="trigger">
+              <div class="desc-name">Trigger</div>
+              <ul class="desc-list">
+                <li>Located on the front of the controller</li>
+                <li>Used for selection</li>
+                <li>Used for triggering actions</li>
+                <li>Pressure-sensitive for responsive input</li>
+              </ul>
+            </div>
+            <div class="hotspot-desc" data-key="grip">
+              <div class="desc-name">Grip</div>
+              <ul class="desc-list">
+                <li>Located on the side of each controller</li>
+                <li>Simulates gripping actions</li>
+                <li>Used to hold interactable objects</li>
+                <li>Some apps map it to other actions</li>
+              </ul>
+            </div>
+            <div class="hotspot-desc" data-key="stick">
+              <div class="desc-name">Thumbstick</div>
+              <ul class="desc-list">
+                <li>Smooth scroll and movement control</li>
+                <li>Press down for extra button input</li>
+              </ul>
+            </div>
+            <div class="hotspot-desc" data-key="face">
+              <div class="desc-name">A / B buttons</div>
+              <ul class="desc-list">
+                <li>Face buttons on the controller</li>
+                <li>Used for different app actions</li>
+                <li>Actions depend on app design and context</li>
+              </ul>
+            </div>
+            <div class="hotspot-desc" data-key="meta">
+              <div class="desc-name">Meta button</div>
+              <ul class="desc-list">
+                <li>Located on the right controller</li>
+                <li>Opens and closes the Quest universal menu</li>
+                <li>Use for settings, notifications, and app control</li>
+                <li>Hold to recenter your view</li>
+              </ul>
+            </div>
           </div>
         </div>
         <div class="viewer3d">
@@ -128,7 +113,7 @@
           <div class="hotspot-fixed hotspot-fixed-left">
             <div class="hotspot-item" data-key="trigger">Trigger</div>
             <div class="hotspot-item" data-key="grip">Grip</div>
-            <div class="hotspot-item" data-key="stick">JoyStick</div>
+            <div class="hotspot-item" data-key="stick">Thumbstick</div>
             <div class="hotspot-item" data-key="face">A/B</div>
             <div class="hotspot-item" data-key="meta">Meta</div>
           </div>
@@ -136,36 +121,71 @@
       </div>
     </section>
 
-    <section class="slide" data-title="Headset">
+    <section class="slide" data-title="Left controller">
       <div class="inner">
-        <div>
-          <h2>Put on headset</h2>
-          <div class="panel">
-            <ul class="list">
-              <li>Loosen strap</li>
-              <li>Headset level on face</li>
-              <li>Strap on back of head</li>
-              <li>Tighten until snug</li>
-            </ul>
+        <div class="viewer3d">
+          <model-viewer class="viewer-canvas" src="assets/quest3-controller-l.glb" camera-controls interaction-prompt="none" environment-image="neutral" exposure="2" shadow-intensity="0.1" shadow-softness="1.0" orientation="180deg 0deg 0deg" camera-orbit="-8deg 160deg 84%" min-camera-orbit="auto auto 84%" max-camera-orbit="auto auto 84%" camera-target="0.03m 0.06m 0m">
+            <button class="hotspot" slot="hotspot-l-trigger" data-key="trigger" aria-label="Trigger" data-position="0.013 0.035 0.027" data-normal="0.131 0.637 0.759"></button>
+            <button class="hotspot" slot="hotspot-l-grip" data-key="grip" aria-label="Grip" data-position="0.015 -0.010 -0.015" data-normal="0.969 -0.222 0.104"></button>
+            <button class="hotspot" slot="hotspot-l-stick" data-key="stick" aria-label="Stick" data-position="-0.007 -0.007 0.039" data-normal="-0.006 -0.814 0.581"></button>
+            <button class="hotspot" slot="hotspot-l-face" data-key="face" aria-label="X/Y" data-position="0.011 -0.008 0.027" data-normal="0.080 -0.839 0.537"></button>
+            <button class="hotspot" slot="hotspot-l-menu" data-key="menu" aria-label="Menu" data-position="-0.010 -0.014 0.019" data-normal="0.003 -0.795 0.607"></button>
+          </model-viewer>
+          <div class="hotspot-connector" aria-hidden="true"></div>
+          <div class="hotspot-fixed hotspot-fixed-right">
+            <div class="hotspot-item" data-key="trigger">Trigger</div>
+            <div class="hotspot-item" data-key="grip">Grip</div>
+            <div class="hotspot-item" data-key="stick">Thumbstick</div>
+            <div class="hotspot-item" data-key="face">X/Y</div>
+            <div class="hotspot-item" data-key="menu">Menu</div>
           </div>
         </div>
-        <div class="img" data-placeholder="Add photo: headset + strap fit"><img class="slide-photo" alt="" loading="lazy" /></div>
-      </div>
-    </section>
-
-    <section class="slide" data-title="Battery">
-      <div class="inner">
         <div>
-          <h2>Battery strap</h2>
-          <div class="panel">
-            <ul class="list">
-              <li>Plug in USB-C</li>
-              <li>Battery on back of head</li>
-              <li>Use dial to tighten</li>
-            </ul>
+          <h2>Left controller buttons</h2>
+          <div class="panel controller-panel">
+            <div class="hotspot-desc is-active" data-key="trigger">
+              <div class="desc-name">Trigger</div>
+              <ul class="desc-list">
+                <li>Located on the front of the controller</li>
+                <li>Used for selection</li>
+                <li>Used for triggering actions</li>
+                <li>Pressure-sensitive for responsive input</li>
+              </ul>
+            </div>
+            <div class="hotspot-desc" data-key="grip">
+              <div class="desc-name">Grip</div>
+              <ul class="desc-list">
+                <li>Located on the side of each controller</li>
+                <li>Simulates gripping actions</li>
+                <li>Used to hold interactable objects</li>
+                <li>Some apps map it to other actions</li>
+              </ul>
+            </div>
+            <div class="hotspot-desc" data-key="stick">
+              <div class="desc-name">Thumbstick</div>
+              <ul class="desc-list">
+                <li>Smooth scroll and movement control</li>
+                <li>Press down for extra button input</li>
+              </ul>
+            </div>
+            <div class="hotspot-desc" data-key="face">
+              <div class="desc-name">X / Y buttons</div>
+              <ul class="desc-list">
+                <li>Face buttons on the controller</li>
+                <li>Used for different app actions</li>
+                <li>Actions depend on app design and context</li>
+              </ul>
+            </div>
+            <div class="hotspot-desc" data-key="menu">
+              <div class="desc-name">Menu</div>
+              <ul class="desc-list">
+                <li>Located on the left controller</li>
+                <li>Opens and closes the active app menu</li>
+                <li>Use for app settings and options</li>
+              </ul>
+            </div>
           </div>
         </div>
-        <div class="img" data-placeholder="Add photo: battery strap + USB-C"><img class="slide-photo" alt="" loading="lazy" /></div>
       </div>
     </section>
 
@@ -173,17 +193,52 @@
       <div class="inner">
         <div>
           <h2>Headset buttons</h2>
-          <div class="panel">
-            <ul class="list">
-              <li>Power = tap to wake</li>
-              <li>Power = hold to power off</li>
-              <li>Volume + / -</li>
-            </ul>
+          <div class="panel controller-panel">
+            <div class="hotspot-desc is-active" data-key="volume">
+              <div class="desc-name">Volume</div>
+              <ul class="desc-list">
+                <li>Use + and - buttons</li>
+                <li>Raise or lower sound</li>
+              </ul>
+            </div>
+            <div class="hotspot-desc" data-key="power">
+              <div class="desc-name">Power</div>
+              <ul class="desc-list">
+                <li>Tap to wake or sleep</li>
+                <li>Hold to turn off headset</li>
+              </ul>
+            </div>
           </div>
         </div>
         <div class="viewer3d">
-          <model-viewer class="viewer-canvas" src="assets/quest3-headset.glb" camera-controls interaction-prompt="none" environment-image="neutral" exposure="0.72" shadow-intensity="0.2" shadow-softness="0.8"></model-viewer>
+          <model-viewer class="viewer-canvas" src="assets/quest3-headset.glb" camera-controls interaction-prompt="none" environment-image="neutral" exposure="0.72" shadow-intensity="0.2" shadow-softness="0.8">
+            <button class="hotspot" slot="hotspot-h-volume" data-key="volume" aria-label="Volume" data-position="-0.047 -0.082 0.097" data-normal="-0.185 -0.983 0.001"></button>
+            <button class="hotspot" slot="hotspot-h-power" data-key="power" aria-label="Power" data-position="0.083 -0.045 0.089" data-normal="0.988 -0.143 0.058"></button>
+          </model-viewer>
+          <div class="hotspot-connector" aria-hidden="true"></div>
+          <div class="hotspot-fixed hotspot-fixed-right hotspot-fixed-bottom">
+            <div class="hotspot-item" data-key="volume">Volume</div>
+            <div class="hotspot-item" data-key="power">Power</div>
+          </div>
         </div>
+      </div>
+    </section>
+
+    <section class="slide" data-title="Headset fit">
+      <div class="inner">
+        <div>
+          <h2>Put on headset</h2>
+          <div class="panel">
+            <ul class="list">
+              <li>Turn rear wheel to loosen first</li>
+              <li>Set headset level on your face</li>
+              <li>Place rear pad low on back of head</li>
+              <li>Tighten wheel until snug</li>
+              <li>Adjust top Velcro strap to lift face pressure</li>
+            </ul>
+          </div>
+        </div>
+        <div class="img" data-placeholder="Add photo: Elite Strap with Battery fit"><img class="slide-photo" alt="" loading="lazy" /></div>
       </div>
     </section>
 
@@ -193,9 +248,9 @@
           <h2>Glasses</h2>
           <div class="panel">
             <ul class="list">
-              <li>Use glasses spacer (if available)</li>
+              <li>Use the glasses spacer if needed</li>
               <li>Put on headset slowly</li>
-              <li>Do not let frames touch lenses</li>
+              <li>Do not let your frames touch the lenses</li>
             </ul>
           </div>
         </div>
@@ -210,8 +265,8 @@
           <div class="panel">
             <ul class="list">
               <li>Re-center headset on your face</li>
-              <li>Tighten strap until stable and comfortable</li>
-              <li>Turn the lens distance wheel until text looks clear</li>
+              <li>Tighten until stable and comfortable</li>
+              <li>Turn the lens distance wheel until text is clear</li>
             </ul>
           </div>
         </div>
@@ -219,26 +274,137 @@
       </div>
     </section>
 
+    <section class="slide" data-title="Library">
+      <div class="inner">
+        <div>
+          <h2>Find the library</h2>
+          <div class="panel">
+            <ul class="list">
+              <li>Press the Meta button</li>
+              <li>Open Library</li>
+              <li>Select the app you need</li>
+            </ul>
+          </div>
+        </div>
+        <div class="img" data-placeholder="Add photo: Library screen"><img class="slide-photo" alt="" loading="lazy" /></div>
+      </div>
+    </section>
+
+    <section class="slide" data-title="Recenter">
+      <div class="inner">
+        <div>
+          <h2>Recenter view</h2>
+          <div class="panel">
+            <ul class="list">
+              <li>Look straight where you want front</li>
+              <li>Hold the Meta button</li>
+              <li>Release when the view recenters</li>
+            </ul>
+          </div>
+        </div>
+        <div class="img" data-placeholder="Add photo: recenter prompt"><img class="slide-photo" alt="" loading="lazy" /></div>
+      </div>
+    </section>
+
+    <section class="slide" data-title="MR/VR">
+      <div class="inner">
+        <div>
+          <h2>Switch MR and VR</h2>
+          <div class="panel">
+            <ul class="list">
+              <li>Double-tap the side of the headset</li>
+              <li>This switches between MR and VR view</li>
+              <li>Double-tap again to switch back</li>
+            </ul>
+          </div>
+        </div>
+        <div class="img" data-placeholder="Add photo: double-tap location"><img class="slide-photo" alt="" loading="lazy" /></div>
+      </div>
+    </section>
+
+    <section class="slide" data-title="Quit app">
+      <div class="inner">
+        <div>
+          <h2>Quit an app</h2>
+          <div class="panel">
+            <ul class="list">
+              <li>Press Meta button to open menu</li>
+              <li>Select the open app</li>
+              <li>Choose Quit</li>
+            </ul>
+          </div>
+        </div>
+        <div class="img" data-placeholder="Add photo: app menu + quit"><img class="slide-photo" alt="" loading="lazy" /></div>
+      </div>
+    </section>
+
+    <section class="slide" data-title="Boundary">
+      <div class="inner">
+        <div>
+          <h2>Update boundary</h2>
+          <div class="panel">
+            <ul class="list">
+              <li>Open Quick settings</li>
+              <li>Select Boundary</li>
+              <li>Redraw before play if needed</li>
+            </ul>
+          </div>
+        </div>
+        <div class="img" data-placeholder="Add photo: Boundary settings"><img class="slide-photo" alt="" loading="lazy" /></div>
+      </div>
+    </section>
+
     <section class="slide" data-title="Store">
       <div class="inner">
         <div>
-          <h2>Take off / store</h2>
+          <h2>Take off headset</h2>
           <div class="panel">
             <ul class="list">
               <li>Loosen strap first</li>
               <li>Lift headset up and forward</li>
-              <li>Place on a flat surface, lenses facing up</li>
-              <li>Keep away from direct sunlight</li>
+              <li>Set it down with lenses facing up</li>
             </ul>
           </div>
         </div>
-        <div class="img" data-placeholder="Add photo: safe set-down"><img class="slide-photo" alt="" loading="lazy" /></div>
+        <div class="img" data-placeholder="Add photo: safe headset set-down"><img class="slide-photo" alt="" loading="lazy" /></div>
+      </div>
+    </section>
+
+    <section class="slide" data-title="Cleaning">
+      <div class="inner">
+        <div>
+          <h2>Clean after use</h2>
+          <div class="panel">
+            <ul class="list">
+              <li>Use microfiber cloth on lenses</li>
+              <li>Wipe face pad before handoff</li>
+              <li>No sprays or paper towels</li>
+            </ul>
+          </div>
+        </div>
+        <div class="img" data-placeholder="Add photo: lens cloth + wipe"><img class="slide-photo" alt="" loading="lazy" /></div>
+      </div>
+    </section>
+
+    <section class="slide" data-title="Plug in">
+      <div class="inner">
+        <div>
+          <h2>Plug in for next person</h2>
+          <div class="panel">
+            <ul class="list">
+              <li>Connect headset charging cable</li>
+              <li>Connect Elite Strap battery cable</li>
+              <li>Return controllers to charging spot</li>
+            </ul>
+          </div>
+        </div>
+        <div class="img" data-placeholder="Add photo: charging setup"><img class="slide-photo" alt="" loading="lazy" /></div>
       </div>
     </section>
   </main>
 
   <footer>
-    <div id="count">1 / 10</div>
+    <div id="count">1 / 15</div>
     <div class="dots" id="dots"></div>
   </footer>
 

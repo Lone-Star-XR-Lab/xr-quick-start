@@ -6,6 +6,8 @@
   --accent:#60a5fa;
   --shadow:0 18px 45px rgba(0,0,0,.55);
   --r:18px;
+  --header-h:56px;
+  --footer-h:46px;
 }
 *{box-sizing:border-box}
 html,body{height:100%}
@@ -59,11 +61,11 @@ header{
 .progress{height:100%;width:0%;background:linear-gradient(90deg, rgba(96,165,250,.9), rgba(96,165,250,.35));transition:width .2s ease}
 main{
   height:100%;display:flex;align-items:center;justify-content:center;
-  padding:58px 4px 40px;
+  padding:calc(var(--header-h) + 10px) 0 calc(var(--footer-h) + 4px);
 }
 .slide{
-  width:min(1720px,99.5vw);
-  height:min(980px,calc(100vh - 102px));
+  width:min(2400px,100vw);
+  height:min(1400px,calc(100vh - var(--header-h) - var(--footer-h) - 8px));
   display:none;
   border-radius:var(--r);
   background:rgba(255,255,255,.04);
@@ -73,11 +75,111 @@ main{
 }
 .slide.active{display:block}
 .inner{
-  height:100%;padding:12px;
-  display:grid;grid-template-columns:1.05fr .95fr;gap:8px;
+  height:100%;padding:8px;
+  display:grid;grid-template-columns:1.05fr .95fr;gap:6px;
 }
 h2{margin:0 0 10px;letter-spacing:-.02em;font-size:clamp(30px,4vw,40px)}
 .panel{border-radius:16px;border:1px solid var(--border);background:rgba(0,0,0,.22);padding:14px}
+.controller-panel{
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+}
+.controller-hint{
+  margin:0;
+  color:var(--muted);
+  font-size:clamp(18px,2vw,24px);
+  font-weight:700;
+}
+.hotspot-desc{
+  display:none;
+  border:1px solid rgba(255,255,255,.18);
+  border-radius:12px;
+  background:rgba(7,11,18,.82);
+  padding:14px 16px;
+}
+.hotspot-desc.is-active{
+  display:block;
+}
+.desc-name{
+  font-size:clamp(38px,4.2vw,58px);
+  font-weight:800;
+  line-height:1.05;
+  margin:0 0 8px;
+}
+.desc-text{
+  font-size:clamp(30px,3.1vw,44px);
+  line-height:1.2;
+  color:#e5e7eb;
+  text-align:center;
+}
+.desc-list{
+  margin:0;
+  padding-left:1.2em;
+  color:#e5e7eb;
+  text-align:left;
+  font-size:clamp(30px,3.1vw,44px);
+  line-height:1.2;
+}
+.desc-list li{
+  margin:4px 0;
+}
+.slide[data-title="Right controller"] .inner > div:first-child{
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  text-align:center;
+  padding-top:0;
+}
+.slide[data-title="Left controller"] .inner > div:last-child{
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  text-align:center;
+  padding-top:0;
+}
+.slide[data-title="Left controller"] .controller-panel,
+.slide[data-title="Right controller"] .controller-panel{
+  width:min(860px, 100%);
+  align-items:center;
+}
+.slide[data-title="Left controller"] .hotspot-desc,
+.slide[data-title="Right controller"] .hotspot-desc{
+  width:100%;
+  text-align:center;
+}
+.slide[data-title="Left controller"] h2,
+.slide[data-title="Right controller"] h2{
+  font-size:clamp(42px,5vw,62px);
+  margin-bottom:14px;
+}
+.slide[data-title="Left controller"] .desc-name,
+.slide[data-title="Right controller"] .desc-name,
+.slide[data-title="Headset buttons"] .desc-name{
+  font-size:clamp(42px,4.5vw,64px);
+}
+.slide[data-title="Left controller"] .desc-text,
+.slide[data-title="Right controller"] .desc-text,
+.slide[data-title="Headset buttons"] .desc-text{
+  font-size:clamp(32px,3.4vw,48px);
+}
+.slide[data-title="Left controller"] .desc-list,
+.slide[data-title="Right controller"] .desc-list,
+.slide[data-title="Headset buttons"] .desc-list{
+  font-size:clamp(32px,3.4vw,48px);
+}
+.slide[data-title="Headset buttons"] .inner > div:first-child{
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  text-align:center;
+}
+.slide[data-title="Headset buttons"] .inner > div:first-child .panel{
+  width:min(860px, 100%);
+}
 .list{margin:0;padding-left:18px;font-size:clamp(20px,2.4vw,30px);line-height:1.35}
 .list li{margin:4px 0}
 .img{
@@ -95,7 +197,7 @@ h2{margin:0 0 10px;letter-spacing:-.02em;font-size:clamp(30px,4vw,40px)}
 .viewer3d{
   position:relative;
   height:100%;border-radius:16px;border:1px solid rgba(255,255,255,.18);
-  background:rgba(0,0,0,.28);padding:8px;
+  background:rgba(0,0,0,.28);padding:4px;
 }
 .viewer-canvas{
   width:100%;height:100%;min-height:220px;border-radius:12px;
@@ -223,6 +325,22 @@ h2{margin:0 0 10px;letter-spacing:-.02em;font-size:clamp(30px,4vw,40px)}
 .slide[data-title="Right controller"] .hotspot-item{
   text-align:left;
 }
+.slide[data-title="Headset buttons"] .hotspot-fixed{
+  top:auto;
+  bottom:14px;
+  left:50%;
+  right:auto;
+  width:auto;
+  transform:translateX(-50%);
+  flex-direction:row;
+  align-items:center;
+  justify-content:center;
+  gap:12px;
+}
+.slide[data-title="Headset buttons"] .hotspot-item{
+  min-width:136px;
+  text-align:center;
+}
 .hotspot-item.is-active{
   opacity:1;
   transform:translateY(0);
@@ -241,7 +359,7 @@ h2{margin:0 0 10px;letter-spacing:-.02em;font-size:clamp(30px,4vw,40px)}
 }
 footer{
   position:fixed;inset:auto 0 0 0;display:flex;align-items:center;justify-content:space-between;
-  padding:10px 14px 12px;background:rgba(11,14,20,.70);backdrop-filter:blur(10px);
+  padding:8px 10px 10px;background:rgba(11,14,20,.70);backdrop-filter:blur(10px);
   border-top:1px solid var(--border);color:var(--muted);font-weight:750;z-index:10;
 }
 .dots{display:flex;gap:6px;align-items:center}
@@ -276,10 +394,10 @@ footer{
 }
 @media (max-width:860px){
   .inner{grid-template-columns:1fr}
-  main{padding:56px 4px 38px}
+  main{padding:calc(var(--header-h) + 8px) 0 calc(var(--footer-h) + 2px)}
   .slide{
-    width:min(1280px,99.5vw);
-    height:min(900px,calc(100vh - 98px));
+    width:min(1280px,100vw);
+    height:min(900px,calc(100vh - var(--header-h) - var(--footer-h) - 4px));
   }
   h2{font-size:clamp(28px,5.5vw,34px)}
   .list{font-size:clamp(19px,3.4vw,25px)}
