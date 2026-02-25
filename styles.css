@@ -181,7 +181,9 @@ h2{margin:0 0 10px;letter-spacing:-.02em;font-size:clamp(30px,4vw,40px)}
   width:min(860px, 100%);
 }
 .slide[data-title="Library"] .inner > div:first-child,
-.slide[data-title="MR/VR"] .inner > div:first-child{
+.slide[data-title="MR/VR"] .inner > div:first-child,
+.slide[data-title="Recenter"] .inner > div:first-child,
+.slide[data-title="Quit app"] .inner > div:first-child{
   display:flex;
   flex-direction:column;
   justify-content:center;
@@ -190,11 +192,15 @@ h2{margin:0 0 10px;letter-spacing:-.02em;font-size:clamp(30px,4vw,40px)}
   padding-top:0;
 }
 .slide[data-title="Library"] .inner > div:first-child .panel,
-.slide[data-title="MR/VR"] .inner > div:first-child .panel{
+.slide[data-title="MR/VR"] .inner > div:first-child .panel,
+.slide[data-title="Recenter"] .inner > div:first-child .panel,
+.slide[data-title="Quit app"] .inner > div:first-child .panel{
   width:min(860px, 100%);
 }
 .slide[data-title="Library"] .list,
-.slide[data-title="MR/VR"] .list{
+.slide[data-title="MR/VR"] .list,
+.slide[data-title="Recenter"] .list,
+.slide[data-title="Quit app"] .list{
   padding-left:0;
   list-style-position:inside;
   text-align:center;
