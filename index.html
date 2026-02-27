@@ -9,6 +9,7 @@
     4) IMAGE_BY_SLIDE in slides.js is 0-based index -> ./img/filename for non-3D slides.
     5) 3D model slides are in index.html with <model-viewer> elements.
     6) Controller labels are hotspot <button> elements inside each model-viewer.
+    7) Hotspots can include data-orbit / data-target to auto-rotate per selected button.
   -->
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
@@ -208,17 +209,26 @@
                 <li>Hold to turn off headset</li>
               </ul>
             </div>
+            <div class="hotspot-desc" data-key="ipd">
+              <div class="desc-name">IPD</div>
+              <ul class="desc-list">
+                <li>Slide to adjust lens spacing</li>
+                <li>Set until image looks clear and comfortable</li>
+              </ul>
+            </div>
           </div>
         </div>
         <div class="viewer3d">
           <model-viewer class="viewer-canvas" src="assets/quest3-headset.glb" camera-controls interaction-prompt="none" environment-image="neutral" exposure="0.72" shadow-intensity="0.2" shadow-softness="0.8">
             <button class="hotspot" slot="hotspot-h-volume" data-key="volume" aria-label="Volume" data-position="-0.047 -0.082 0.097" data-normal="-0.185 -0.983 0.001"></button>
             <button class="hotspot" slot="hotspot-h-power" data-key="power" aria-label="Power" data-position="0.083 -0.045 0.089" data-normal="0.988 -0.143 0.058"></button>
+            <button class="hotspot" slot="hotspot-h-ipd" data-key="ipd" aria-label="IPD" data-position="0.037 -0.084 0.100" data-normal="0.211 -0.962 0.171"></button>
           </model-viewer>
           <div class="hotspot-connector" aria-hidden="true"></div>
           <div class="hotspot-fixed hotspot-fixed-right hotspot-fixed-bottom">
             <div class="hotspot-item" data-key="volume">Volume</div>
             <div class="hotspot-item" data-key="power">Power</div>
+            <div class="hotspot-item" data-key="ipd">IPD</div>
           </div>
         </div>
       </div>

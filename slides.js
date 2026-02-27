@@ -50,14 +50,51 @@ const AUTO_MS = 8000;
 
 const hotspotIndexBySlide = new Map();
 const imageSequenceIndexBySlide = new Map();
+const stableCameraByModel = new WeakMap();
 let debugMode = false;
 let debugPanel = null;
+const slideSlugs = slides.map((slide, idx) => slugify(slide.dataset.title || `${idx + 1}`));
+
+function slugify(text) {
+  return String(text)
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
+function getUrlSlideHash(index) {
+  const slug = slideSlugs[index] || `${index + 1}`;
+  return `#${index + 1}-${slug}`;
+}
+
+function parseSlideHash(hash) {
+  const raw = decodeURIComponent((hash || "").replace(/^#/, "").trim().toLowerCase());
+  if (!raw) return null;
+
+  const numeric = raw.match(/^\d+$/);
+  if (numeric) return Number(raw) - 1;
+
+  const withPrefix = raw.match(/^slide-(\d+)$/);
+  if (withPrefix) return Number(withPrefix[1]) - 1;
+
+  const numericWithSlug = raw.match(/^(\d+)-/);
+  if (numericWithSlug) return Number(numericWithSlug[1]) - 1;
+
+  return slideSlugs.indexOf(raw);
+}
+
+function syncUrlToSlide(index) {
+  const nextHash = getUrlSlideHash(index);
+  if (window.location.hash === nextHash) return;
+  history.replaceState(null, "", nextHash);
+}
 
 function ensureDebugPanel() {
   if (debugPanel) return debugPanel;
   const panel = document.createElement("div");
   panel.className = "debug-panel";
-  panel.innerHTML = "<strong>Debug mode</strong><div>Press D to toggle. Click model to sample point.</div><pre id=\"debugOut\">off</pre>";
+  panel.innerHTML = "<strong>Debug mode</strong><div>Press D to toggle. Click model to sample point. Press C to capture hotspot view.</div><pre id=\"debugOut\">off</pre>";
   document.body.appendChild(panel);
   debugPanel = panel;
   return panel;
@@ -68,7 +105,7 @@ function setDebugMode(on) {
   const panel = ensureDebugPanel();
   panel.classList.toggle("active", on);
   const out = panel.querySelector("#debugOut");
-  if (out) out.textContent = on ? "ON\nClick model to read + place debug probe" : "off";
+  if (out) out.textContent = on ? "ON\nClick model to read + place debug probe\nPress C to capture camera orbit/target for active hotspot" : "off";
   if (!on) {
     document.querySelectorAll(".debug-probe.debug-active").forEach((probe) => probe.classList.remove("debug-active"));
   }
@@ -82,6 +119,168 @@ function writeDebug(text) {
 
 function fmtVec3(v) {
   return `${v.x.toFixed(3)} ${v.y.toFixed(3)} ${v.z.toFixed(3)}`;
+}
+
+function normalizeCameraValue(value) {
+  if (value == null) return "";
+  if (typeof value === "string") return value.trim();
+  const asString = String(value).trim();
+  return asString.startsWith("[object") ? "" : asString;
+}
+
+function getCurrentCameraOrbit(model) {
+  const fromProperty = normalizeCameraValue(model?.cameraOrbit);
+  if (fromProperty) return fromProperty;
+  return normalizeCameraValue(model?.getAttribute?.("camera-orbit"));
+}
+
+function getCurrentCameraTarget(model) {
+  const fromProperty = normalizeCameraValue(model?.cameraTarget);
+  if (fromProperty) return fromProperty;
+  return normalizeCameraValue(model?.getAttribute?.("camera-target"));
+}
+
+function parseVec3(text) {
+  const parts = String(text || "").trim().split(/\s+/);
+  if (parts.length !== 3) return null;
+  const x = Number(parts[0]);
+  const y = Number(parts[1]);
+  const z = Number(parts[2]);
+  if (!Number.isFinite(x) || !Number.isFinite(y) || !Number.isFinite(z)) return null;
+  return { x, y, z };
+}
+
+function parseAngleDeg(token) {
+  if (!token) return NaN;
+  const t = String(token).trim().toLowerCase();
+  if (t.endsWith("rad")) {
+    const rad = Number.parseFloat(t.slice(0, -3));
+    return Number.isFinite(rad) ? (rad * 180) / Math.PI : NaN;
+  }
+  const cleaned = t.endsWith("deg") ? t.slice(0, -3) : t;
+  const deg = Number.parseFloat(cleaned);
+  return Number.isFinite(deg) ? deg : NaN;
+}
+
+function getCurrentOrbitParts(model) {
+  const orbit = getCurrentCameraOrbit(model);
+  const parts = orbit.split(/\s+/);
+  return {
+    theta: parts[0] || "0deg",
+    phi: parts[1] || "160deg",
+    radius: parts[2] || "84%"
+  };
+}
+
+function getStableCameraState(model) {
+  let state = stableCameraByModel.get(model);
+  if (state) return state;
+
+  const orbit = getCurrentOrbitParts(model);
+  state = {
+    phi: orbit.phi,
+    radius: orbit.radius,
+    target: getCurrentCameraTarget(model) || "0m 0m 0m"
+  };
+  stableCameraByModel.set(model, state);
+  return state;
+}
+
+function closestThetaDeg(targetDeg, currentDeg) {
+  let theta = targetDeg;
+  while (theta - currentDeg > 180) theta -= 360;
+  while (theta - currentDeg < -180) theta += 360;
+  return theta;
+}
+
+function normalizeOrbitForSmooth(orbit, model, fallback) {
+  const parts = String(orbit || "").trim().split(/\s+/);
+  if (parts.length < 1) return "";
+
+  const currentThetaDeg = parseAngleDeg(getCurrentOrbitParts(model).theta);
+  const rawThetaDeg = parseAngleDeg(parts[0]);
+  const thetaDeg = Number.isFinite(rawThetaDeg) && Number.isFinite(currentThetaDeg)
+    ? closestThetaDeg(rawThetaDeg, currentThetaDeg)
+    : rawThetaDeg;
+
+  const phi = parts[1] || fallback.phi;
+  const radius = parts[2] || fallback.radius;
+  const theta = Number.isFinite(thetaDeg) ? `${thetaDeg.toFixed(1)}deg` : (parts[0] || "0deg");
+  return `${theta} ${phi} ${radius}`;
+}
+
+function deriveHotspotView(hotspot, model) {
+  const normal = parseVec3(hotspot?.dataset?.normal);
+  if (!normal) return null;
+
+  const normalLen = Math.hypot(normal.x, normal.y, normal.z);
+  if (!Number.isFinite(normalLen) || normalLen <= 0) return null;
+
+  const nx = normal.x / normalLen;
+  const nz = normal.z / normalLen;
+  const stable = getStableCameraState(model);
+  const currentThetaDeg = parseAngleDeg(getCurrentOrbitParts(model).theta);
+
+  const thetaDeg = (Math.atan2(nx, nz) * 180) / Math.PI;
+  const smoothTheta = Number.isFinite(currentThetaDeg)
+    ? closestThetaDeg(thetaDeg, currentThetaDeg)
+    : thetaDeg;
+
+  return {
+    target: stable.target,
+    orbit: `${smoothTheta.toFixed(1)}deg ${stable.phi} ${stable.radius}`
+  };
+}
+
+function applyHotspotView(slide, hotspot) {
+  const model = slide.querySelector("model-viewer.viewer-canvas");
+  if (!model || !model.loaded || !hotspot) return;
+  const stable = getStableCameraState(model);
+
+  let orbit = hotspot.dataset.orbit;
+  let target = hotspot.dataset.target || stable.target;
+  if (!orbit) {
+    const derived = deriveHotspotView(hotspot, model);
+    if (derived) orbit = derived.orbit;
+  } else {
+    orbit = normalizeOrbitForSmooth(orbit, model, stable);
+  }
+
+  if (target) model.cameraTarget = target;
+  if (orbit) model.cameraOrbit = orbit;
+}
+
+async function captureActiveHotspotView() {
+  const activeSlide = slides[i];
+  if (!activeSlide) {
+    writeDebug("No active slide.");
+    return;
+  }
+
+  const model = activeSlide.querySelector("model-viewer.viewer-canvas");
+  const hotspot = activeSlide.querySelector(".hotspot.is-active:not(.debug-probe)");
+  if (!model || !hotspot) {
+    writeDebug("No active hotspot/model on this slide.");
+    return;
+  }
+
+  const orbit = getCurrentCameraOrbit(model);
+  const target = getCurrentCameraTarget(model);
+  if (!orbit || !target) {
+    writeDebug("Orbit/target unavailable. Move camera, then press C.");
+    return;
+  }
+
+  hotspot.dataset.orbit = orbit;
+  hotspot.dataset.target = target;
+  const line = `data-orbit="${orbit}" data-target="${target}"`;
+  const key = hotspot.dataset.key || "hotspot";
+  writeDebug(`Saved view for ${key}\n${line}\n(copied to clipboard)`);
+  try {
+    await navigator.clipboard.writeText(line);
+  } catch {
+    // Clipboard may be blocked outside secure context.
+  }
 }
 
 function ensureDebugProbe(model) {
@@ -137,6 +336,11 @@ function clearHotspotSequence() {
 function updateHotspotConnector(slide) {
   const viewer = slide.querySelector(".viewer3d");
   if (!viewer) return;
+  const model = viewer.querySelector("model-viewer.viewer-canvas");
+  if (!model || !model.loaded) {
+    viewer.classList.remove("has-connector");
+    return;
+  }
 
   const dot = viewer.querySelector(".hotspot.is-active");
   const label = viewer.querySelector(".hotspot-item.is-active");
@@ -151,6 +355,11 @@ function updateHotspotConnector(slide) {
 
   const x1 = dr.left + (dr.width / 2) - vr.left;
   const y1 = dr.top + (dr.height / 2) - vr.top;
+  const dotWithinViewer = x1 >= 0 && x1 <= vr.width && y1 >= 0 && y1 <= vr.height;
+  if (!dotWithinViewer) {
+    viewer.classList.remove("has-connector");
+    return;
+  }
 
   const fixedGroup = label.closest(".hotspot-fixed");
   const isBottomLayout = fixedGroup?.classList.contains("hotspot-fixed-bottom");
@@ -169,6 +378,10 @@ function updateHotspotConnector(slide) {
   const dx = x2 - x1;
   const dy = y2 - y1;
   const len = Math.hypot(dx, dy);
+  if (!Number.isFinite(len) || len <= 0) {
+    viewer.classList.remove("has-connector");
+    return;
+  }
   const angle = Math.atan2(dy, dx) * (180 / Math.PI);
 
   viewer.style.setProperty("--conn-x", `${x1}px`);
@@ -192,6 +405,7 @@ function setHotspot(slide, index) {
   fixedLabels.forEach((label) => label.classList.toggle("is-active", label.dataset.key === activeKey));
   const descriptions = Array.from(slide.querySelectorAll(".hotspot-desc"));
   descriptions.forEach((desc) => desc.classList.toggle("is-active", desc.dataset.key === activeKey));
+  applyHotspotView(slide, activeHotspot);
   activeHotspot.focus({ preventScroll: true });
   requestAnimationFrame(() => updateHotspotConnector(slide));
 }
@@ -217,12 +431,70 @@ function nextHotspot(slide) {
   setHotspot(slide, current + 1);
 }
 
+function advanceHotspotOrSlide() {
+  const activeSlide = slides[i];
+  if (!activeSlide) {
+    next();
+    return;
+  }
+
+  const slideIndex = slides.indexOf(activeSlide);
+
+  const hotspots = Array.from(activeSlide.querySelectorAll(".hotspot:not(.debug-probe)"));
+  if (!hotspots.length) {
+    const sequence = IMAGE_SEQUENCE_BY_SLIDE[slideIndex];
+    if (!sequence?.length) {
+      next();
+      return;
+    }
+
+    const currentStep = imageSequenceIndexBySlide.get(slideIndex) ?? 0;
+    if (currentStep < sequence.length - 1) {
+      applyImageSequenceStep(activeSlide, slideIndex, currentStep + 1);
+      return;
+    }
+
+    next();
+    return;
+  }
+
+  const current = hotspotIndexBySlide.get(slideIndex) ?? 0;
+  if (current < hotspots.length - 1) {
+    setHotspot(activeSlide, current + 1);
+    return;
+  }
+
+  next();
+}
+
 function initHotspotClickHandlers() {
   document.querySelectorAll(".viewer3d").forEach((viewer) => {
+    let pointerStartX = 0;
+    let pointerStartY = 0;
+    let dragged = false;
+    const DRAG_THRESHOLD_PX = 8;
+
+    viewer.addEventListener("pointerdown", (e) => {
+      pointerStartX = e.clientX;
+      pointerStartY = e.clientY;
+      dragged = false;
+    });
+
+    viewer.addEventListener("pointermove", (e) => {
+      if (dragged) return;
+      const dx = Math.abs(e.clientX - pointerStartX);
+      const dy = Math.abs(e.clientY - pointerStartY);
+      if (dx > DRAG_THRESHOLD_PX || dy > DRAG_THRESHOLD_PX) dragged = true;
+    });
+
     viewer.addEventListener("click", (e) => {
       const slide = viewer.closest(".slide");
       if (!slide || !slide.classList.contains("active")) return;
       const model = viewer.querySelector("model-viewer.viewer-canvas");
+      if (dragged) {
+        dragged = false;
+        return;
+      }
 
       if (debugMode && model && (e.target === model || model.contains(e.target))) {
         e.stopPropagation();
@@ -333,6 +605,7 @@ function render() {
   Array.from(dots.children).forEach((b, idx) => b.classList.toggle("active", idx === i));
   document.title = `Quest 3 - ${slides[i].dataset.title || i + 1}`;
   updateHotspotSequence();
+  syncUrlToSlide(i);
 }
 
 function go(idx) {
@@ -364,13 +637,18 @@ nextBtn.addEventListener("click", (e) => {
 
 document.addEventListener("click", (e) => {
   if (e.target.closest("button") || e.target.closest("label") || e.target.closest("input") || e.target.closest(".viewer3d")) return;
-  next();
+  advanceHotspotOrSlide();
 });
 
 document.addEventListener("keydown", (e) => {
   if (e.key.toLowerCase() === "d") {
     e.preventDefault();
     setDebugMode(!debugMode);
+    return;
+  }
+  if (debugMode && e.key.toLowerCase() === "c") {
+    e.preventDefault();
+    captureActiveHotspotView();
     return;
   }
   if (e.key === "ArrowRight" || e.key === " " || e.key === "Enter") {
@@ -389,10 +667,20 @@ document.addEventListener("keydown", (e) => {
 
 auto.addEventListener("change", () => setAuto(auto.checked));
 
+window.addEventListener("hashchange", () => {
+  const target = parseSlideHash(window.location.hash);
+  if (target == null || Number.isNaN(target)) return;
+  go(target);
+});
+
 applySlideImages();
 initImageSequenceSlides();
 initHotspotClickHandlers();
 initHotspotTracking();
 ensureDebugPanel();
 buildDots();
+const initialHashSlide = parseSlideHash(window.location.hash);
+if (initialHashSlide != null && !Number.isNaN(initialHashSlide)) {
+  i = (initialHashSlide + slides.length) % slides.length;
+}
 render();
